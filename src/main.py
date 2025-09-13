@@ -6,6 +6,8 @@ import time
 import network
 import json
 import asyncio
+from light_to_note import play_tune
+from data_store import save_data
 
 # --- Pin Configuration ---
 # The photosensor is connected to an Analog-to-Digital Converter (ADC) pin.
@@ -213,13 +215,14 @@ async def main():
             clamped_light = max(min_light, min(light_value, max_light))
 
             if clamped_light > min_light:
-                frequency = map_value(
-                    clamped_light, min_light, max_light, min_freq, max_freq
-                )
+                frequency = play_tune(clamped_light)
                 buzzer_pin.freq(frequency)
                 buzzer_pin.duty_u16(32768)  # 50% duty cycle
             else:
                 stop_tone()  # If it's very dark, be quiet
+
+            # Save the data 
+            save_data(clamped_light, frequency)
 
         await asyncio.sleep_ms(50)  # type: ignore[attr-defined]
 
