@@ -1,4 +1,5 @@
 # tests/test_wifi_scan.py
+# Written with the help of ChatGPT
 import sys
 import types
 import importlib
