@@ -64,8 +64,16 @@ def play_tone(frequency: int, duration_ms: int) -> None:
     """Plays a tone on the buzzer for a given duration."""
     if frequency > 0:
         buzzer_pin.freq(int(frequency))
-        buzzer_pin.duty_u16(32768)  # 50% duty cycle
-        time.sleep_ms(duration_ms)  # type: ignore[attr-defined]
+        on_time = 50 # modified buzzer is ON
+        off_time = 10 # modified buzzer is OFF
+        elapsed = 0 # modified time passed
+        while elapsed < duration_ms: # modified Repeating on and off until duraction
+            buzzer_pin.duty_u16(32768)  # 50% duty cycle
+            time.sleep_ms(on_time)  # type: ignore[attr-defined] added on_time so it waits for it to turn on
+            elapsed += on_time# modified adds to the timer when on
+            buzzer_pin.duty_u16(0)# modified suppoed to turn buzzer off
+            time.sleep_ms(off_time) # added off_time so it waits for it to turn on
+            elapsed += off_time # modified
         stop_tone()
     else:
         time.sleep_ms(duration_ms)  # type: ignore[attr-defined]
