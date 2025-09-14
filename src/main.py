@@ -223,6 +223,9 @@ async def main():
             else:
                 stop_tone()  # If it's very dark, be quiet
 
+            # Save the data 
+            save_data(clamped_light, frequency)
+
         await asyncio.sleep_ms(50)  # type: ignore[attr-defined]
 
 
