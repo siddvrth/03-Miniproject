@@ -1,3 +1,4 @@
+
 # main.py for Raspberry Pi Pico W
 # Title: Pico Light Orchestra Instrument Code
 
@@ -6,6 +7,8 @@ import time
 import network
 import json
 import asyncio
+from light_to_note import play_tune
+from data_store import save_data
 
 # --- Pin Configuration ---
 # The photosensor is connected to an Analog-to-Digital Converter (ADC) pin.
@@ -204,7 +207,7 @@ async def main():
 
             # Map the light value to a frequency range (e.g., C4 to C6)
             # Adjust the input range based on your room's lighting
-            min_light = 1000
+            min_light = 42500
             max_light = 65000
             min_freq = 261  # C4
             max_freq = 1046  # C6
@@ -213,11 +216,10 @@ async def main():
             clamped_light = max(min_light, min(light_value, max_light))
 
             if clamped_light > min_light:
-                frequency = map_value(
-                    clamped_light, min_light, max_light, min_freq, max_freq
-                )
+                frequency = play_tune(clamped_light)
                 buzzer_pin.freq(frequency)
                 buzzer_pin.duty_u16(32768)  # 50% duty cycle
+                save_data(clamped_light, frequency)
             else:
                 stop_tone()  # If it's very dark, be quiet
 
@@ -231,3 +233,4 @@ if __name__ == "__main__":
     except KeyboardInterrupt:
         print("Program stopped.")
         stop_tone()
+
