@@ -22,23 +22,39 @@ A4 = 440
 B4 = 494
 C5 = 523
 
-# A simple melody: "Twinkle, Twinkle, Little Star"
+# A simple melody: "Mary Mary had a little lamp"
 # Format: (note_frequency, duration_in_ms)
 SONG = [
+    (E4, 400),
+    (D4, 400),
     (C4, 400),
-    (C4, 400),
+    (D4, 400),
+    (E4, 400),
+    (E4, 400),
+    (E4, 800),
+
+    (D4, 400),
+    (D4, 400),
+    (D4, 800),
+
+    (E4, 400),
     (G4, 400),
-    (G4, 400),
-    (A4, 400),
-    (A4, 400),
     (G4, 800),
-    (F4, 400),
-    (F4, 400),
-    (E4, 400),
+
     (E4, 400),
     (D4, 400),
+    (C4, 400),
     (D4, 400),
-    (C4, 800),
+    (E4, 400),
+    (E4, 400),
+    (E4, 400),
+    (E4, 400),
+
+    (D4, 400),
+    (D4, 400),
+    (E4, 400),
+    (D4, 400),
+    (C4, 1200),
 ]
 
 # --- Conductor Logic ---
