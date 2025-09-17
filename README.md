@@ -18,6 +18,9 @@ using
 Other IDE can be used, including Visual Studio Code or
 [rshell](./doc/rshell.md).
 
+## Software Architecture
+![Alt text](sw-diagram.png?raw=true)
+
 ## Hardware
 
 * Raspberry Pi Pico WH [SC1634](https://pip.raspberrypi.com/categories/1088-raspberry-pi-pico-2-w) (WiFi, Bluetooth, with header pins)
