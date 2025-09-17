@@ -4,6 +4,13 @@ import _thread
 DATA_STORE: list = []
 last_print_time = 0
 
+def make_song(data_store, duration=400):
+    song = []
+    for brightness, frequency in data_store:
+        song.append((frequency, duration))
+    return song
+
+
 def save_data(brightness: float, frequency: float):
     """Saves light brightness -> buzzer frequency mapping to list in-memory."""
     DATA_STORE.append((brightness, frequency))

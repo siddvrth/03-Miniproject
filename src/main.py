@@ -8,7 +8,7 @@ import network
 import json
 import asyncio
 from light_to_note import play_tune
-from data_store import save_data
+from data_store import save_data, DATA_STORE, make_song
 
 # --- Pin Configuration ---
 # The photosensor is connected to an Analog-to-Digital Converter (ADC) pin.
@@ -67,16 +67,8 @@ def play_tone(frequency: int, duration_ms: int) -> None:
     """Plays a tone on the buzzer for a given duration."""
     if frequency > 0:
         buzzer_pin.freq(int(frequency))
-        on_time = 50 # modified buzzer is ON
-        off_time = 10 # modified buzzer is OFF
-        elapsed = 0 # modified time passed
-        while elapsed < duration_ms: # modified Repeating on and off until duraction
-            buzzer_pin.duty_u16(32768)  # 50% duty cycle
-            time.sleep_ms(on_time)  # type: ignore[attr-defined] added on_time so it waits for it to turn on
-            elapsed += on_time# modified adds to the timer when on
-            buzzer_pin.duty_u16(0)# modified suppoed to turn buzzer off
-            time.sleep_ms(off_time) # added off_time so it waits for it to turn on
-            elapsed += off_time # modified
+        buzzer_pin.duty_u16(32768)  # 50% duty cycle
+        time.sleep_ms(duration_ms)  # type: ignore[attr-defined]
         stop_tone()
     else:
         time.sleep_ms(duration_ms)  # type: ignore[attr-defined]
@@ -198,6 +190,7 @@ async def handle_request(reader, writer):
 
 async def main():
     """Main execution loop."""
+  
     try:
         ip = connect_to_wifi()
         print(f"Starting web server on {ip}...")
@@ -205,9 +198,18 @@ async def main():
     except Exception as e:
         print(f"Failed to initialize: {e}")
         return
+    
+    #Timer for Buzzer
+    start_time = time.time()
+    duration = 10
 
     # This loop runs the "default" behavior: playing sound based on light
     while True:
+
+        if time.time() - start_time > duration:
+            print("10 seconds elapsed, stop.")
+            break
+
         # Only run this loop if no API note is currently scheduled to play
         if api_note_task is None or api_note_task.done():
             # Read the sensor. Values range from ~500 (dark) to ~65535 (bright)
@@ -231,10 +233,10 @@ async def main():
             else:
                 stop_tone()  # If it's very dark, be quiet
 
-            # Save the data 
-            save_data(clamped_light, frequency)
-
         await asyncio.sleep_ms(50)  # type: ignore[attr-defined]
+
+    SONG = make_song(DATA_STORE) #Use this for Condoctor Data
+    print("SONG list for conductor:", SONG)
 
 
 # Run the main event loop
