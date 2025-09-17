@@ -236,7 +236,7 @@ async def main():
         await asyncio.sleep_ms(50)  # type: ignore[attr-defined]
 
     SONG = make_song(DATA_STORE) #Use this for Condoctor Data
-    print("SONG list for conductor:", SONG)
+    print("SONG list for conductor:")
 
 
 # Run the main event loop
