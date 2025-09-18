@@ -1,69 +1,44 @@
 # conductor.py
 # To be run on a student's computer (not the Pico)
 # Requires the 'requests' library: pip install requests
-
 import requests
 import time
+import json
 
-# --- Configuration ---
-# Students should populate this list with the IP address(es of their Picos
+
+
+    # --- Configuration ---
+    # Students should populate this list with the IP address(es of their Picos
 PICO_IPS = [
     "192.168.1.101",
-]
+    ]
 
-# --- Music Definition ---
-# Notes mapped to frequencies (in Hz)
-C4 = 262
-D4 = 294
-E4 = 330
-F4 = 349
-G4 = 392
-A4 = 440
-B4 = 494
-C5 = 523
+def run_conductor(freq_file: str):
+    with open('random_frequencies.json', "r") as f:
+        data = json.load(f)
 
-# A simple melody: "Twinkle, Twinkle, Little Star"
-# Format: (note_frequency, duration_in_ms)
-SONG = [
-    (C4, 400),
-    (C4, 400),
-    (G4, 400),
-    (G4, 400),
-    (A4, 400),
-    (A4, 400),
-    (G4, 800),
-    (F4, 400),
-    (F4, 400),
-    (E4, 400),
-    (E4, 400),
-    (D4, 400),
-    (D4, 400),
-    (C4, 800),
-]
+    # putting all the frequency in json file in a song list and play every note for 100 ms
+    SONG = [(entry["frequency"], 100) for entry in data]
 
-# --- Conductor Logic ---
+    # --- Conductor Logic ---
+    def play_note_on_all_picos(freq, ms):
+        """Sends a /tone POST request to every Pico in the list."""
+        print(f"Playing note: {freq}Hz for {ms}ms on all devices.")
 
+        payload = {"freq": freq, "ms": ms, "duty": 0.5}
 
-def play_note_on_all_picos(freq, ms):
-    """Sends a /tone POST request to every Pico in the list."""
-    print(f"Playing note: {freq}Hz for {ms}ms on all devices.")
+        for ip in PICO_IPS:
+            url = f"http://{ip}/tone"
+            try:
+                # We use a short timeout because we don't need to wait for a response
+                # This makes the orchestra play more in sync.
+                requests.post(url, json=payload, timeout=0.1)
+            except requests.exceptions.Timeout:
+                # This is expected, we can ignore it
+                pass
+            except requests.exceptions.RequestException as e:
+                print(f"Error contacting {ip}: {e}")
 
-    payload = {"freq": freq, "ms": ms, "duty": 0.5}
-
-    for ip in PICO_IPS:
-        url = f"http://{ip}/tone"
-        try:
-            # We use a short timeout because we don't need to wait for a response
-            # This makes the orchestra play more in sync.
-            requests.post(url, json=payload, timeout=0.1)
-        except requests.exceptions.Timeout:
-            # This is expected, we can ignore it
-            pass
-        except requests.exceptions.RequestException as e:
-            print(f"Error contacting {ip}: {e}")
-
-
-if __name__ == "__main__":
     print("--- Pico Light Orchestra Conductor ---")
     print(f"Found {len(PICO_IPS)} devices in the orchestra.")
     print("Press Ctrl+C to stop.")
@@ -88,3 +63,8 @@ if __name__ == "__main__":
 
     except KeyboardInterrupt:
         print("\nConductor stopped by user.")
+
+
+
+
+
